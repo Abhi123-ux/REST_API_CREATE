@@ -1,7 +1,7 @@
 const Product = require("../models/products");
 
 const getAllProducts = async (req, res) => {
-    const { company, name, featured, sort, select, page = 1, limit = 10 } = req.query;
+    const { company, name, featured, sort, select, page = 1, limit = 3 } = req.query;
     const queryObject = {};
 
     if (company) {
@@ -15,6 +15,8 @@ const getAllProducts = async (req, res) => {
     if (name) {
         queryObject.name = { $regex: name, $options: "i" };
     }
+
+    console.log("Query Object:", queryObject);
 
     let apiData = Product.find(queryObject);
 
@@ -36,17 +38,21 @@ const getAllProducts = async (req, res) => {
 
     try {
         const myData = await apiData;
+        console.log("Result Count:", myData.length);
         res.status(200).json({ myData, nbHits: myData.length });
     } catch (error) {
+        console.error("Error Fetching Data:", error.message);
         res.status(500).json({ error: error.message });
     }
 }
 
 const getAllProductsTesting = async (req, res) => {
     try {
-        const myData = await Product.find(req.query).skip(2);
+        const myData = await Product.find({});
+        console.log("Testing Query Results:", myData.length);
         res.status(200).json({ myData });
     } catch (error) {
+        console.error("Error Fetching Data:", error.message);
         res.status(500).json({ error: error.message });
     }
 }
